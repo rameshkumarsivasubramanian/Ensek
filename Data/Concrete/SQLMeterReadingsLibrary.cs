@@ -1,6 +1,5 @@
 ﻿using Ensek.Data.Abstract;
 using Ensek.Models;
-using System;
 using System.Linq;
 
 namespace Ensek.Data.Concrete
@@ -13,27 +12,16 @@ namespace Ensek.Data.Concrete
             _db = db;
         }
 
-        public bool HasOlderReading(string AccountId, string MeterReadingDateTime)
+        public bool HasOlderReading(MeterReading mr)
         {
-            int iAccountId = int.Parse(AccountId);
-            DateTime dtMeterReadingDateTime = DateTime.Parse(MeterReadingDateTime);
-            int cntOlder = _db.MeterReadings.Count(a => a.AccountId == iAccountId && a.MeterReadingDateTime > dtMeterReadingDateTime);
+            int cntOlder = _db.MeterReadings.Count(a => a.AccountId == mr.AccountId && a.MeterReadingDateTime > mr.MeterReadingDateTime);
 
             return (cntOlder > 0);
         }
 
-        public void InsertReading(string AccountId, string MeterReadingDateTime, string MeterReadValue)
+        public void InsertReading(MeterReading mr)
         {
-            int iAccountId = int.Parse(AccountId);
-            DateTime dtMeterReadingDateTime = DateTime.Parse(MeterReadingDateTime);
-            int iMeterReadValue = int.Parse(MeterReadValue);
-
-            _db.MeterReadings.Add(new MeterReading()
-            {
-                AccountId = iAccountId,
-                MeterReadingDateTime = dtMeterReadingDateTime,
-                MeterReadValue = iMeterReadValue
-            });
+            _db.MeterReadings.Add(mr);
         }
 
         public void SaveChanges()

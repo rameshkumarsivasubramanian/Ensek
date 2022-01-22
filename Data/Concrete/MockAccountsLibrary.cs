@@ -43,10 +43,9 @@ namespace Ensek.Data.Concrete
             };
         }
 
-        public bool IsValidAccountId(string AccountId)
+        public bool IsValidAccountId(MeterReading mr)
         {
-            int iAccountId = int.Parse(AccountId);
-            int cntAccountId = _mockData.Count(a => a.AccountId == iAccountId);
+            int cntAccountId = _mockData.Count(a => a.AccountId == mr.AccountId);
 
             return (cntAccountId > 0);
         }

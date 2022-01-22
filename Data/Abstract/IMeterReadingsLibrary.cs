@@ -1,10 +1,12 @@
-﻿namespace Ensek.Data.Abstract
+﻿using Ensek.Models;
+
+namespace Ensek.Data.Abstract
 {
     public interface IMeterReadingsLibrary
     {
-        bool HasOlderReading(string AccountId, string MeterReadingDateTime);
+        bool HasOlderReading(MeterReading mr);
 
-        void InsertReading(string AccountId, string MeterReadingDateTime, string MeterReadValue);
+        void InsertReading(MeterReading mr);
 
         void SaveChanges();
     }

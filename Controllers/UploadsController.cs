@@ -1,5 +1,7 @@
-﻿using Ensek.Data.Abstract;
+﻿using AutoMapper;
+using Ensek.Data.Abstract;
 using Ensek.DTO;
+using Ensek.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,10 +14,13 @@ namespace Ensek.Controllers
     [ApiController]
     public class UploadsController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IAccountsLibrary _accountsRepo;
         private readonly IMeterReadingsLibrary _meterReadingsRepo;
-        public UploadsController(IAccountsLibrary AccountsRepo, IMeterReadingsLibrary MeterReadingsRepo)
+        
+        public UploadsController(IMapper Mapper, IAccountsLibrary AccountsRepo, IMeterReadingsLibrary MeterReadingsRepo)
         {
+            _mapper = Mapper;
             _accountsRepo = AccountsRepo;
             _meterReadingsRepo = MeterReadingsRepo;
         }
@@ -55,8 +60,10 @@ namespace Ensek.Controllers
                                     //Check if the row has any loading issues
                                     if (newMeterReading.IsValid)
                                     {
+                                        MeterReading mr = _mapper.Map<MeterReading>(newMeterReading);
+
                                         //06. Check if the AccountId is valid
-                                        bool isValidAccountId = _accountsRepo.IsValidAccountId(newMeterReading.AccountId);
+                                        bool isValidAccountId = _accountsRepo.IsValidAccountId(mr);
                                         if (!isValidAccountId)
                                         {
                                             newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Invalid AccountId"));
@@ -72,14 +79,14 @@ namespace Ensek.Controllers
                                             else
                                             {
                                                 //09. When an account has an existing read, ensure the new read isn't older than the existing read
-                                                bool hasOlderReading = _meterReadingsRepo.HasOlderReading(newMeterReading.AccountId, newMeterReading.MeterReadingDateTime);
+                                                bool hasOlderReading = _meterReadingsRepo.HasOlderReading(mr);
                                                 if (hasOlderReading)
                                                 {
                                                     newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Has older readings"));
                                                 }
                                                 else
                                                 {
-                                                    _meterReadingsRepo.InsertReading(newMeterReading.AccountId, newMeterReading.MeterReadingDateTime, newMeterReading.MeterReadValue);
+                                                    _meterReadingsRepo.InsertReading(mr);
                                                 }
                                             }
                                         }

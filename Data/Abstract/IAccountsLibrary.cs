@@ -1,7 +1,9 @@
-﻿namespace Ensek.Data.Abstract
+﻿using Ensek.Models;
+
+namespace Ensek.Data.Abstract
 {
     public interface IAccountsLibrary
     {
-        bool IsValidAccountId(string AccountId);
+        bool IsValidAccountId(MeterReading mr);
     }
 }

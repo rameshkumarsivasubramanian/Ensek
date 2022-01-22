@@ -32,27 +32,16 @@ namespace Ensek.Data.Concrete
             };
         }
 
-        public bool HasOlderReading(string AccountId, string MeterReadingDateTime)
+        public bool HasOlderReading(MeterReading mr)
         {
-            int iAccountId = int.Parse(AccountId);
-            DateTime dtMeterReadingDateTime = DateTime.Parse(MeterReadingDateTime);
-            int cntOlder = _mockData.Count(a => a.AccountId == iAccountId && a.MeterReadingDateTime > dtMeterReadingDateTime);
+            int cntOlder = _mockData.Count(a => a.AccountId == mr.AccountId && a.MeterReadingDateTime > mr.MeterReadingDateTime);
 
             return (cntOlder > 0);
         }
 
-        public void InsertReading(string AccountId, string MeterReadingDateTime, string MeterReadValue)
+        public void InsertReading(MeterReading mr)
         {
-            int iAccountId = int.Parse(AccountId);
-            DateTime dtMeterReadingDateTime = DateTime.Parse(MeterReadingDateTime);
-            int iMeterReadValue = int.Parse(MeterReadValue);
-
-            _mockData.Add(new MeterReading()
-            {
-                AccountId = iAccountId,
-                MeterReadingDateTime = dtMeterReadingDateTime,
-                MeterReadValue = iMeterReadValue
-            });
+            _mockData.Add(mr);
         }
 
         public void SaveChanges()

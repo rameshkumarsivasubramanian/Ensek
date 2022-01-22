@@ -1,4 +1,5 @@
 ﻿using Ensek.Data.Abstract;
+using Ensek.Models;
 using System.Linq;
 
 namespace Ensek.Data.Concrete
@@ -11,10 +12,9 @@ namespace Ensek.Data.Concrete
             _db = db;
         }
 
-        public bool IsValidAccountId(string AccountId)
+        public bool IsValidAccountId(MeterReading mr)
         {
-            int iAccountId = int.Parse(AccountId);
-            int cntAccountId = _db.Accounts.Count(a => a.AccountId == iAccountId);
+            int cntAccountId = _db.Accounts.Count(a => a.AccountId == mr.AccountId);
 
             return (cntAccountId > 0);
         }
