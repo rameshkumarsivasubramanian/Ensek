@@ -40,5 +40,24 @@ namespace Ensek.Data.Concrete
 
             return (cntOlder > 0);
         }
+
+        public void InsertReading(string AccountId, string MeterReadingDateTime, string MeterReadValue)
+        {
+            int iAccountId = int.Parse(AccountId);
+            DateTime dtMeterReadingDateTime = DateTime.Parse(MeterReadingDateTime);
+            int iMeterReadValue = int.Parse(MeterReadValue);
+
+            _mockData.Add(new MeterReading()
+            {
+                AccountId = iAccountId,
+                MeterReadingDateTime = dtMeterReadingDateTime,
+                MeterReadValue = iMeterReadValue
+            });
+        }
+
+        public void SaveChanges()
+        {
+            //Do nothing
+        }
     }
 }

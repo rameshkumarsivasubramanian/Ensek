@@ -77,6 +77,10 @@ namespace Ensek.Controllers
                                                 {
                                                     newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Has older readings"));
                                                 }
+                                                else
+                                                {
+                                                    _meterReadingsRepo.InsertReading(newMeterReading.AccountId, newMeterReading.MeterReadingDateTime, newMeterReading.MeterReadValue);
+                                                }
                                             }
                                         }
                                     }
@@ -85,17 +89,22 @@ namespace Ensek.Controllers
                                     fileContents.Add(newMeterReading);
                                 }
 
+                                MeterReadingLoadStatus retVal = new MeterReadingLoadStatus()
+                                {
+                                    TotalRecords = fileContents.Count,
+                                    Successful = fileContents.Count(r => r.IsValid),
+                                    Failed = fileContents.Count(r => !r.IsValid),
+                                    ValidationResults = fileContents.SelectMany(r => r.ValidationResults)
+                                };
+
+                                if (retVal.Successful > 0)
+                                    _meterReadingsRepo.SaveChanges();
+
                                 //Check if the file has any row data excluding the header
-                                if (fileContents.Count > 0)
+                                if (retVal.TotalRecords > 0)
                                 {
                                     //04. After processing, the number of sucessful/failed readings should be returned
-                                    return Ok(new MeterReadingLoadStatus()
-                                    { 
-                                        TotalRecords = fileContents.Count,
-                                        Successful = fileContents.Count(r => r.IsValid),
-                                        Failed = fileContents.Count(r => !r.IsValid),
-                                        ValidationResults = fileContents.SelectMany(r => r.ValidationResults)
-                                    });
+                                    return Ok(retVal);
                                 }
                                 else
                                 {
