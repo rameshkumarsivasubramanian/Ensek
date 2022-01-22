@@ -29,8 +29,9 @@ namespace Ensek.Controllers
             try
             {
                 IFormFile file = Request.Form.Files.First();
+                string fileExtension = Path.GetExtension(file.FileName).ToUpper();
                 //02. The endpoint should be able to process a CSV of meter readings
-                if (file.ContentType == "text/csv")
+                if (fileExtension == ".CSV")
                 {
                     //Check if file has any data
                     if (file.Length > 0)
@@ -114,7 +115,7 @@ namespace Ensek.Controllers
                 }
                 else
                 {
-                    return BadRequest(file.ContentType + " not a valid format");
+                    return BadRequest($"*{fileExtension} not a valid format");
                 }
             }
             catch (Exception ex)
