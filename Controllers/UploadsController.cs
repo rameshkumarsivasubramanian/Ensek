@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Ensek.DTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -30,13 +31,15 @@ namespace Ensek.Controllers
                         {
                             if (!reader.EndOfStream)
                             {
-                                string header = reader.ReadLine();
+                                string headerData = reader.ReadLine();
 
-                                List<string> strContent = new List<string>();
+                                List<MeterReading> strContent = new List<MeterReading>();
                                 while (!reader.EndOfStream)
                                 {
-                                    string line = reader.ReadLine();
-                                    strContent.Add(line);
+                                    string rowData = reader.ReadLine();
+
+                                    MeterReading newMeterReading = new MeterReading(headerData, rowData);
+                                    strContent.Add(newMeterReading);
                                 }
 
                                 if (strContent.Count > 0)
