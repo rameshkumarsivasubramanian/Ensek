@@ -13,9 +13,11 @@ namespace Ensek.Controllers
     public class UploadsController : ControllerBase
     {
         private readonly IAccountsLibrary _accountsRepo;
-        public UploadsController(IAccountsLibrary AccountsRepo)
+        private readonly IMeterReadingsLibrary _meterReadingsRepo;
+        public UploadsController(IAccountsLibrary AccountsRepo, IMeterReadingsLibrary MeterReadingsRepo)
         {
             _accountsRepo = AccountsRepo;
+            _meterReadingsRepo = MeterReadingsRepo;
         }
 
         //01. Create the following endpoint:
@@ -53,7 +55,7 @@ namespace Ensek.Controllers
                                     if (newMeterReading.IsValid)
                                     {
                                         //06. Check if the AccountId is valid
-                                        Boolean isValidAccountId = _accountsRepo.IsValidAccountId(newMeterReading.AccountId);
+                                        bool isValidAccountId = _accountsRepo.IsValidAccountId(newMeterReading.AccountId);
                                         if (!isValidAccountId)
                                         {
                                             newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Invalid AccountId"));
@@ -65,6 +67,15 @@ namespace Ensek.Controllers
                                             if (cntDuplicate > 0)
                                             {
                                                 newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Duplicate Entry"));
+                                            }
+                                            else
+                                            {
+                                                //09. When an account has an existing read, ensure the new read isn't older than the existing read
+                                                bool hasOlderReading = _meterReadingsRepo.HasOlderReading(newMeterReading.AccountId, newMeterReading.MeterReadingDateTime);
+                                                if (hasOlderReading)
+                                                {
+                                                    newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Has older readings"));
+                                                }
                                             }
                                         }
                                     }

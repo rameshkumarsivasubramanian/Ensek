@@ -22,6 +22,7 @@ namespace Ensek
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IAccountsLibrary, MockAccountsLibrary>();
+            services.AddScoped<IMeterReadingsLibrary, MockMeterReadingsLibrary>();
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
