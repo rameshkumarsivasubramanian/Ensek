@@ -23,7 +23,7 @@ namespace Ensek.DTO
         [RegularExpression("^[0-9]{5}$", ErrorMessage = "{0} should be in the format NNNNN.")]
         public string MeterReadValue { get; set; }
 
-        public IEnumerable<string> ValidationResults;
+        public List<string> ValidationResults;
 
         public MeterReadingRead(int RowNum, string HeaderData, string RowData)
         {
@@ -65,7 +65,7 @@ namespace Ensek.DTO
             ValidationContext ctx = new ValidationContext(this);
             Validator.TryValidateObject(this, ctx, results, true);
 
-            ValidationResults = results.Select(v => "Row#" + _rowNum + " " + v.ErrorMessage);
+            ValidationResults = results.Select(v => string.Format("Row#{0} {1}", _rowNum, v.ErrorMessage)).ToList();
         }
     }
 }

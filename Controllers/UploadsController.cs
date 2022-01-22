@@ -1,4 +1,5 @@
-﻿using Ensek.DTO;
+﻿using Ensek.Data.Abstract;
+using Ensek.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,12 @@ namespace Ensek.Controllers
     [ApiController]
     public class UploadsController : ControllerBase
     {
+        private readonly IAccountsLibrary _accountsRepo;
+        public UploadsController(IAccountsLibrary AccountsRepo)
+        {
+            _accountsRepo = AccountsRepo;
+        }
+
         //01. Create the following endpoint:
         //POST => /meter-reading-uploads
         [Route("meter-reading-uploads")]
@@ -23,24 +30,50 @@ namespace Ensek.Controllers
                 //02. The endpoint should be able to process a CSV of meter readings
                 if (file.ContentType == "text/csv")
                 {
+                    //Check if file has any data
                     if (file.Length > 0)
                     {
                         using (StreamReader reader = new StreamReader(file.OpenReadStream()))
                         {
+                            //Check if the file has any header
                             if (!reader.EndOfStream)
                             {
+                                //Read header
                                 string headerData = reader.ReadLine();
 
                                 List<MeterReadingRead> fileContents = new List<MeterReadingRead>();
                                 int RowNum = 0;
                                 while (!reader.EndOfStream)
                                 {
+                                    //Read rows
                                     string rowData = reader.ReadLine();
 
                                     MeterReadingRead newMeterReading = new MeterReadingRead(++RowNum, headerData, rowData);
+                                    //Check if the row has any loading issues
+                                    if (newMeterReading.IsValid)
+                                    {
+                                        //06. Check if the AccountId is valid
+                                        Boolean isValidAccountId = _accountsRepo.IsValidAccountId(newMeterReading.AccountId);
+                                        if (!isValidAccountId)
+                                        {
+                                            newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Invalid AccountId"));
+                                        }
+                                        else
+                                        {
+                                            //05. Check for duplicate entries
+                                            int cntDuplicate = fileContents.Count(r => r.AccountId == newMeterReading.AccountId && r.IsValid);
+                                            if (cntDuplicate > 0)
+                                            {
+                                                newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Duplicate Entry"));
+                                            }
+                                        }
+                                    }
+
+                                    //Add to the collection valid or not
                                     fileContents.Add(newMeterReading);
                                 }
 
+                                //Check if the file has any row data excluding the header
                                 if (fileContents.Count > 0)
                                 {
                                     //04. After processing, the number of sucessful/failed readings should be returned
