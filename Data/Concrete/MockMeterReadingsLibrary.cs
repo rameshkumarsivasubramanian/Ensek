@@ -14,10 +14,19 @@ namespace Ensek.Data.Concrete
         {
             _mockData = new List<MeterReading>()
             {
-                new MeterReading() 
+                new MeterReading() //To fail validation
                 {
+                    //Row #3
                     AccountId = 2233, 
-                    MeterReadingDateTime = new DateTime(2021, 3, 13, 15, 45, 0), 
+                    MeterReadingDateTime = new DateTime(2020, 3, 13, 15, 45, 0), //After current reading date
+                    MeterReadValue = 1576
+                },
+                new MeterReading() //To pass validation
+                {
+                    //Row #4
+                    AccountId = 8766, 
+                    //Before current reading date
+                    MeterReadingDateTime = new DateTime(2019, 3, 13, 15, 45, 0), 
                     MeterReadValue = 1576
                 }
             };
