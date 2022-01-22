@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ensek.Controllers
 {
@@ -23,6 +20,7 @@ namespace Ensek.Controllers
             try
             {
                 IFormFile file = Request.Form.Files.First();
+                //02. The endpoint should be able to process a CSV of meter readings
                 if (file.ContentType == "text/csv")
                 {
                     if (file.Length > 0)
@@ -33,18 +31,26 @@ namespace Ensek.Controllers
                             {
                                 string headerData = reader.ReadLine();
 
-                                List<MeterReading> strContent = new List<MeterReading>();
+                                List<MeterReadingRead> fileContents = new List<MeterReadingRead>();
+                                int RowNum = 0;
                                 while (!reader.EndOfStream)
                                 {
                                     string rowData = reader.ReadLine();
 
-                                    MeterReading newMeterReading = new MeterReading(headerData, rowData);
-                                    strContent.Add(newMeterReading);
+                                    MeterReadingRead newMeterReading = new MeterReadingRead(++RowNum, headerData, rowData);
+                                    fileContents.Add(newMeterReading);
                                 }
 
-                                if (strContent.Count > 0)
+                                if (fileContents.Count > 0)
                                 {
-                                    return Ok(strContent.Count);
+                                    //04. After processing, the number of sucessful/failed readings should be returned
+                                    return Ok(new MeterReadingLoadStatus()
+                                    { 
+                                        TotalRecords = fileContents.Count,
+                                        Successful = fileContents.Count(r => r.IsValid),
+                                        Failed = fileContents.Count(r => !r.IsValid),
+                                        ValidationResults = fileContents.SelectMany(r => r.ValidationResults)
+                                    });
                                 }
                                 else
                                 {
