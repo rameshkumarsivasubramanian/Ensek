@@ -66,7 +66,7 @@ namespace Ensek.Controllers
                                         bool isValidAccountId = _accountsRepo.IsValidAccountId(mr);
                                         if (!isValidAccountId)
                                         {
-                                            newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Invalid AccountId"));
+                                            newMeterReading.ValidationResults.Add($"Row#{RowNum} Invalid AccountId");
                                         }
                                         else
                                         {
@@ -74,7 +74,7 @@ namespace Ensek.Controllers
                                             int cntDuplicate = fileContents.Count(r => r.AccountId == newMeterReading.AccountId && r.IsValid);
                                             if (cntDuplicate > 0)
                                             {
-                                                newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Duplicate Entry"));
+                                                newMeterReading.ValidationResults.Add($"Row#{RowNum} Duplicate Entry");
                                             }
                                             else
                                             {
@@ -82,7 +82,7 @@ namespace Ensek.Controllers
                                                 bool hasOlderReading = _meterReadingsRepo.HasOlderReading(mr);
                                                 if (hasOlderReading)
                                                 {
-                                                    newMeterReading.ValidationResults.Add(string.Format("Row#{0} {1}", RowNum, "Has older readings"));
+                                                    newMeterReading.ValidationResults.Add($"Row#{RowNum} Has older readings");
                                                 }
                                                 else
                                                 {

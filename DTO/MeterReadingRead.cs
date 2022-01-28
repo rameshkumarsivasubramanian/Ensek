@@ -65,7 +65,7 @@ namespace Ensek.DTO
             ValidationContext ctx = new ValidationContext(this);
             Validator.TryValidateObject(this, ctx, results, true);
 
-            ValidationResults = results.Select(v => string.Format("Row#{0} {1}", _rowNum, v.ErrorMessage)).ToList();
+            ValidationResults = results.Select(v => $"Row#{_rowNum} {v.ErrorMessage}").ToList();
         }
     }
 }
