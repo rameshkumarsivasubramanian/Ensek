@@ -14,7 +14,7 @@ namespace Ensek.Data.Concrete
 
         public bool HasOlderReading(MeterReading mr)
         {
-            int cntOlder = _db.MeterReadings.Count(a => a.AccountId == mr.AccountId && a.MeterReadingDateTime > mr.MeterReadingDateTime);
+            int cntOlder = _db.MeterReadings.Count(a => a.AccountId == mr.AccountId && a.MeterReadingDateTime >= mr.MeterReadingDateTime);
 
             return (cntOlder > 0);
         }
