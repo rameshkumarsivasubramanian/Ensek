@@ -37,8 +37,17 @@ namespace Ensek.DTO
             ValidateData();
         }
 
+        public int RowNum
+        {
+            get
+            {
+                return _rowNum;
+            }
+        }
+
         public bool IsValid {
-            get {
+            get 
+            {
                 return ValidationResults.Count() == 0;
             }
         }
